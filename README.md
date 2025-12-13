@@ -26,12 +26,12 @@ Example path: `F:\The Elder Scrolls V Skyrim - Special Edition\mo2\mods\SKSE\SKS
 }
 ```
 
-| FieldName           | FieldType | Description                                                  |
-| ------------------- | --------- | ------------------------------------------------------------ |
-| highHeelSlideName   | String    | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 0 when the high heels are removed; otherwise, set it to 1. |
-| noHighHeelSlideName | String    | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 1 when the high heels are removed; otherwise, set it to 0.<br />It is the inverted version of **highHeelSlideName**.<br />Can be empty string |
-| reverse             | boolean   | Used to control whether to invert the slider.                |
-| stockingSlotList    | Array     | Hosiery equipment slot. It checks whether the corresponding slot is equipped on the player to control whether the slider is activated. See **Additional : supported slot** |
+| FieldName             | FieldType | Description                                                  |
+| --------------------- | --------- | ------------------------------------------------------------ |
+| `highHeelSlideName`   | `String`  | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 0 when the high heels are removed; otherwise, set it to 1. |
+| `noHighHeelSlideName` | `String`  | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 1 when the high heels are removed; otherwise, set it to 0.<br />It is the inverted version of `highHeelSlideName`.<br />Can be empty string |
+| `reverse`             | `boolean` | Used to control whether to reverse the slider state. Example: For the slider named `highHeelSlideName`, the slider weight is 0 when the shoes are worn, and 1 when the shoes are taken off. |
+| `stockingSlotList`    | `Array`   | Hosiery equipment slot. It checks whether the corresponding slot is equipped on the player to control whether the slider is activated. See **Additional : supported slot** |
 
 **Additional : supported slot**
 
