@@ -1,0 +1,15 @@
+{
+    "name":  "automatic_stocking_adaptation_for_heel",
+    "version-string":  "1.0.0",
+    "description":  "Automatic Stocking Adaptation for Heel On/Off Movements",
+    "license":  "MIT",
+    "dependencies":  [
+                         "nlohmann-json",
+                         "spdlog"
+                     ],
+    "features":  {
+                     "mo2-install":  {
+                                         "description":  "Automatic_Stocking_Adaptation_for_Heel"
+                                     }
+                 }
+}
