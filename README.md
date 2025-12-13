@@ -1,6 +1,8 @@
 # Skyrim-SKSE-Plugin-Automatic-Stocking-Adaptation-for-Heel
 Automatic Stocking Adaptation for Heel On/Off Movements
 
+For Chinese version, see [README.md](https://github.com/551557545/Skyrim-SKSE-Plugin-Automatic-Stocking-Adaptation-for-Heel/blob/main/README_cn.md)
+
 
 
 # Quick Start
