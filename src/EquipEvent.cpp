@@ -10,18 +10,54 @@ EquipEvent& EquipEvent::GetSingleton()
 	return instance;
 }
 
-bool HasBipedSlot(
+bool HasEquipingStocking(
 	const std::vector<RE::BGSBipedObjectForm::BipedObjectSlot>& slotArray,
-	RE::BGSBipedObjectForm::BipedObjectSlot targetSlot)
+	const RE::PlayerCharacter& playerP)
 {
 	// 容器为空，直接返回false（提前退出，优化逻辑）
 	if (slotArray.empty()) {
 		return false;
 	}
-	// 查找目标元素：值类型用 . 访问begin/end（核心修复）
-	auto it = std::find(slotArray.begin(), slotArray.end(), targetSlot);
-	return it != slotArray.end();
+
+	// 临时移除const限定（GetWornArmor实际不修改对象，安全）
+	RE::PlayerCharacter& mutablePlayer = const_cast<RE::PlayerCharacter&>(playerP);
+
+	// 遍历所有目标Slot，检查玩家是否穿戴了对应Slot的护甲
+	for (const auto& targetSlot : slotArray) {
+		// 调用非const版本的GetWornArmor（此时对象无const限定，匹配成功）
+		RE::TESObjectARMO* wornArmor = mutablePlayer.GetWornArmor(targetSlot, false);
+		// 如果该Slot有穿戴的护甲，返回true
+		if (wornArmor != nullptr) {
+			return true;
+		}
+	}
+	return false;
 }
+
+bool HasBipedSlot(const std::vector<RE::BGSBipedObjectForm::BipedObjectSlot>& slotArray,
+	const RE::BGSBipedObjectForm::BipedObjectSlot& targetSlot)
+{
+	// 容器为空直接返回false
+	if (slotArray.empty()) {
+		return false;
+	}
+	// 1. 显式转换targetSlot为底层数值类型
+	const std::uint32_t targetMask = static_cast<std::uint32_t>(targetSlot);
+
+	// 2. 遍历容器：循环变量显式指定类型
+	for (const RE::BGSBipedObjectForm::BipedObjectSlot& slot : slotArray) {
+		// 显式转换当前插槽为数值类型
+		const std::uint32_t slotValue = static_cast<std::uint32_t>(slot);
+		// 按位与判断包含关系
+		if ((targetMask & slotValue) != 0) {
+			return true;
+		}
+	}
+
+	// 无匹配插槽
+	return false;
+}
+
 
 RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_event, RE::BSTEventSource<RE::TESEquipEvent>* a_eventSource)
 {
@@ -79,23 +115,30 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 	std::string highHeelSlideName = slideData.highHeelSlideName;
 	std::string noHighHeelSlideName = slideData.noHighHeelSlideName;
 	
-	// 判断是否是脚部装备
-	if (armor->HasPartOf(RE::BGSBipedObjectForm::BipedObjectSlot::kFeet)) {
-
-		logger::info("equip : {}", a_event->equipped);
-
+	logger::info("equip : {}", a_event->equipped);
+	
+	
+	bool isFeetArmor = armor->HasPartOf(RE::BGSBipedObjectForm::BipedObjectSlot::kFeet);
+	bool isStockingArmor = !isFeetArmor ? HasBipedSlot(slideData.bipedObjectSlotList, armor->GetSlotMask()) : false;
+	if (!isFeetArmor && !isStockingArmor) {
+		logger::info("Not a feet armor and Not a stocking armor");
+		return RE::BSEventNotifyControl::kContinue;
+	}
+	bool equipStocking = false;
+	if (isFeetArmor && (equipStocking = HasEquipingStocking(slideData.bipedObjectSlotList, *playerP))) {
+		// 穿脱鞋子 同时装备了丝袜
+		logger::info("change morph");
 		const bool isFromHighToNoHigh = (a_event->equipped == slideData.reverse);
 		const std::string fromSlide = isFromHighToNoHigh ? highHeelSlideName : noHighHeelSlideName;
 		const std::string toSlide = isFromHighToNoHigh ? noHighHeelSlideName : highHeelSlideName;
-
-		// 3. 统一调用方法，无需重复写ModifyPlayerMorph
 		MorphManager::GetSingleton().ModifyPlayerMorph(skeeRefr, fromSlide, toSlide);
-	}
-	else if (HasBipedSlot(slideData.bipedObjectSlotList, armor->GetSlotMask())) {
-		// 说明触发的是丝袜装备
+	} else if (isStockingArmor && !a_event->equipped) {
+		// 穿脱丝袜
 		// 清空滑块
+		logger::info("clear morph");
 		MorphManager::GetSingleton().ClearPlayerMorph(skeeRefr, highHeelSlideName, noHighHeelSlideName);
 	}
+	logger::info("isFeetArmor : {} equipStocking: {}", isFeetArmor, equipStocking);
 	return RE::BSEventNotifyControl::kContinue;
 }
 

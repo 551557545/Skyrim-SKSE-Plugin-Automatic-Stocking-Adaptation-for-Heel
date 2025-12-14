@@ -23,7 +23,7 @@ void SKSEOnMessage(SKSE::MessagingInterface::Message* message) {
 			break;
 		}
 
-	// 2. 游戏主菜单加载完成（可安全访问游戏数据）
+	// 游戏主菜单加载完成（可安全访问游戏数据）
 	case SKSE::MessagingInterface::kPostPostLoad:
 		{
 			logger::info("游戏主菜单加载完成，初始化 MorphManager...");
@@ -36,16 +36,21 @@ void SKSEOnMessage(SKSE::MessagingInterface::Message* message) {
 			logger::info("存档准备加载");
 			break;
 	}
-	// 3. 存档加载完成（此时主角/世界数据已就绪）
+	// 存档加载完成（此时主角/世界数据已就绪）
 	case SKSE::MessagingInterface::kPostLoadGame:
 		{
 			logger::info("存档加载完成，同步 Morph 数据...");
+			break;
+		}
+	// 数据加载完成 在这里设置监听 因为有可能开的是新档
+	case SKSE::MessagingInterface::kDataLoaded:
+		{
+			logger::info("数据加载完成，同步 Morph 数据...");
 			logger::info("注册装备监听事件");
 			RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink(&EquipEvent::GetSingleton());
 			logger::info("注册装备监听事件完成");
 			break;
 		}
-	// 4. 自定义插件间消息（示例：接收其他插件的消息）
 	default:
 		{
 			logger::info("plugin custom message [{}]ID: {}", message->sender, message->type);
