@@ -12,9 +12,9 @@ namespace global {
 		return GLOBAL_CONTEXT.Get<JsonConfigReader::SlideDataConfig>("SlideData");
     }
 
-    void GlobalContext::SetSlideData(JsonConfigReader::SlideDataConfig& data)
+    void GlobalContext::SetSlideData(JsonConfigReader::SlideDataConfig data)
 	{
-		GLOBAL_CONTEXT.Set("SlideData",data);
+		GLOBAL_CONTEXT.Set("SlideData", std::move(data));
     }
 
     // ¶Á²Ù×÷£º¹²ÏíËø

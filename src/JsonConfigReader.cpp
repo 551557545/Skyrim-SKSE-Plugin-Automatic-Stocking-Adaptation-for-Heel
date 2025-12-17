@@ -69,28 +69,49 @@ std::optional<JsonConfigReader::SlideDataConfig> JsonConfigReader::SlideDataConf
 
 // 读取json对象
 std::optional<json> JsonConfigReader::ReadJsonFile(const std::string& jsonPath) {
-	if (!std::filesystem::exists(jsonPath)) {
-		logger::error("Json file not exists：{}", jsonPath);
-		return std::nullopt;  // 返回"无值"，表示读取失败
-    }
-	std::ifstream file(jsonPath);
-    if (!file.is_open()) {
-		logger::error("Failed to open high heel definition file: {}", jsonPath);
-		logger::trace("<<<< Exiting HighHeelDetector::Init (result: false)");
-		return std::nullopt;  // 返回"无值"，表示读取失败
-    }
-    json j;
-    try {
-        file >> j;
-		file.close();
-		logger::debug("JSON file parsed successfully.");
-        return j;
-    }
-    catch (const nlohmann::json::parse_error& e) {
-		logger::error("Failed to parse JSON from '{}'. Details: {}", jsonPath, e.what());
-		logger::trace("<<<< Exiting HighHeelDetector::Init (result: false)");
-        return std::nullopt;
+	// 1. 检查文件存在性，处理filesystem可能的异常
+	try {
+		if (!std::filesystem::exists(jsonPath)) {
+			logger::error("JSON file does not exist: {}", jsonPath);
+			return std::nullopt;
+		}
+	} catch (const std::filesystem::filesystem_error& e) {
+		logger::error("Failed to check JSON file existence (path: {}). Details: {}", jsonPath, e.what());
+		return std::nullopt;
 	}
+
+	// 2. 打开文件并检查状态
+	std::ifstream file(jsonPath);
+	if (!file.is_open()) {
+		logger::error("Failed to open JSON file: {}", jsonPath);
+		logger::trace("<<<< Exiting JsonConfigReader::ReadJsonFile (result: false)");
+		return std::nullopt;
+	}
+
+	// 3. 解析JSON，完善异常处理和流检查
+	json j;
+	try {
+		// 读取并解析，同时检查流状态
+		if (!(file >> j)) {
+			logger::error("Failed to read content from JSON file: {}", jsonPath);
+			logger::trace("<<<< Exiting JsonConfigReader::ReadJsonFile (result: false)");
+			return std::nullopt;
+		}
+
+		logger::debug("JSON file parsed successfully: {}", jsonPath);
+		// 4. 移动语义返回，避免拷贝
+		return std::move(j);
+	} catch (const json::exception& e) {  // 捕获所有JSON相关异常（基类）
+		logger::error("Failed to parse JSON file '{}'. Details: {}", jsonPath, e.what());
+		logger::trace("<<<< Exiting JsonConfigReader::ReadJsonFile (result: false)");
+		return std::nullopt;
+	} catch (const std::exception& e) {  // 兜底捕获其他标准异常
+		logger::error("Unexpected error when reading JSON file '{}'. Details: {}", jsonPath, e.what());
+		logger::trace("<<<< Exiting JsonConfigReader::ReadJsonFile (result: false)");
+		return std::nullopt;
+	}
+
+	// 无需手动close()，ifstream析构会自动关闭文件
 }
 
 // 解析滑块
@@ -101,7 +122,7 @@ bool JsonConfigReader::ParseSlideDataJson(const json& jsonObj)
 		return false;  // 解析失败（字段缺失/错误）
 	}
 	if (!optConfig->empty()) {
-		GLOBAL_CONTEXT.SetSlideData(optConfig.value());
+		GLOBAL_CONTEXT.SetSlideData(std::move(*optConfig));
 		return true;
 	}
 	return false;

@@ -109,7 +109,7 @@ namespace global {
         GlobalContext& operator=(GlobalContext&&) = delete;
 
         static JsonConfigReader::SlideDataConfig& GetSlideData();
-		static void SetSlideData(JsonConfigReader::SlideDataConfig& data);
+		static void SetSlideData(JsonConfigReader::SlideDataConfig data);
         static GlobalContext& GetInstance();
 
         // ========== 核心接口（读操作：共享锁，无互斥） ==========
@@ -157,10 +157,11 @@ namespace global {
         // ========== 核心接口（写操作：独占锁） ==========
         // 存储对象（覆盖式，独占锁）
         template <typename T>
-        void Set(const std::string& key, const T& value) {
+		void Set(const std::string& key, const T&& value)
+		{
             // 独占锁：阻塞所有读/写，保证写操作原子性
             std::unique_lock<std::shared_mutex> lock(m_rwMutex);
-            m_dataMap[key] = value;
+			m_dataMap[key] = std::move(value);
         }
 
         // 删除指定key（独占锁）

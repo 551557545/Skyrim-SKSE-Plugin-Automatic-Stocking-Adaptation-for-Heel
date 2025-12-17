@@ -99,7 +99,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 	}
 
 		// ªÒ»°json≈‰÷√
-	JsonConfigReader::SlideDataConfig& slideData = GLOBAL_CONTEXT.GetSlideData();
+	const JsonConfigReader::SlideDataConfig& slideData = GLOBAL_CONTEXT.GetSlideData();
 	if (slideData.empty()) {
 		logger::error("slideData is empty");
 		return RE::BSEventNotifyControl::kContinue;
