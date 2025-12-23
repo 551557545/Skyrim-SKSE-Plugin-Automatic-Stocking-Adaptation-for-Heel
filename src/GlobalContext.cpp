@@ -7,7 +7,7 @@ namespace global {
         return instance;
     }
 
-    JsonConfigReader::SlideDataConfig& GlobalContext::GetSlideData()
+    const JsonConfigReader::SlideDataConfig& GlobalContext::GetSlideData()
 	{
 		return GLOBAL_CONTEXT.Get<JsonConfigReader::SlideDataConfig>("SlideData");
     }

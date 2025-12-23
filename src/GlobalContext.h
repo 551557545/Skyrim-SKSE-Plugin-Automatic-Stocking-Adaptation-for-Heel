@@ -108,14 +108,14 @@ namespace global {
         GlobalContext(GlobalContext&&) = delete;
         GlobalContext& operator=(GlobalContext&&) = delete;
 
-        static JsonConfigReader::SlideDataConfig& GetSlideData();
+        static const JsonConfigReader::SlideDataConfig& GetSlideData();
 		static void SetSlideData(JsonConfigReader::SlideDataConfig data);
         static GlobalContext& GetInstance();
 
         // ========== 核心接口（读操作：共享锁，无互斥） ==========
         // 获取对象（类型不匹配/key不存在抛异常，共享锁）
         template <typename T>
-        T& Get(const std::string& key) {
+        const T& Get(const std::string& key) {
             // 共享锁：多个读可同时持有，写操作会阻塞
             std::shared_lock<std::shared_mutex> lock(m_rwMutex);
             auto it = m_dataMap.find(key);

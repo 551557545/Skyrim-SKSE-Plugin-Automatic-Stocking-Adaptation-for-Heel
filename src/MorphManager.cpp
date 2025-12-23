@@ -51,8 +51,8 @@ bool MorphManager::Init() {
 }
 bool MorphManager::ClearPlayerMorph(
 	SKEE::TESObjectREFR* actorP,
-	const std::string cleanMorphName1,
-	const std::string cleanMorphName2
+	const std::string& cleanMorphName1,
+	const std::string& cleanMorphName2
 ) {
 	if (!cleanMorphName1.empty()) {
 		MorphManager::GetSingleton().bodyMorphInterface->ClearMorph(actorP, cleanMorphName1.c_str(), (cleanMorphName1 + "Key").c_str());
@@ -65,8 +65,8 @@ bool MorphManager::ClearPlayerMorph(
 }
 bool MorphManager::ModifyPlayerMorph(
 	SKEE::TESObjectREFR* actorP,
-	const std::string cleanMorphName,
-	const std::string changeMorphName
+	const std::string& cleanMorphName,
+	const std::string& changeMorphName
 	)
 {	
 	try {

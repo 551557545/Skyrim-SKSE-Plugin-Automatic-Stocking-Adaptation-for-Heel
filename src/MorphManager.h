@@ -16,12 +16,12 @@ public:
 	static bool Init();
 	bool ClearPlayerMorph(
 		SKEE::TESObjectREFR* actorP,
-		const std::string cleanMorphName1,
-		const std::string cleanMorphName2
+		const std::string& cleanMorphName1,
+		const std::string& cleanMorphName2
 	);
 	bool ModifyPlayerMorph(
 		SKEE::TESObjectREFR* actorP,
-		const std::string cleanMorphName,
-		const std::string changeMorphName
+		const std::string& cleanMorphName,
+		const std::string& changeMorphName
 	);
 };
