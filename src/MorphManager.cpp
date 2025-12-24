@@ -19,10 +19,10 @@ bool MorphManager::Init() {
 		logger::error("GetMessagingInterface Fail!");
 		return false;
 	}
-	SKEE::InterfaceExchangeMessage interfaceExchangeMessage{};
+	RE::InterfaceExchangeMessage interfaceExchangeMessage{};
 	// 3. 向 SKEE 发送接口交换请求
 	bool dispatchSuccess = messagingInterface->Dispatch(
-		static_cast<uint32_t>(SKEE::InterfaceExchangeMessage::kMessage_ExchangeInterface),
+		static_cast<uint32_t>(RE::InterfaceExchangeMessage::kMessage_ExchangeInterface),
 		&interfaceExchangeMessage,
 		sizeof(interfaceExchangeMessage),
 		"SKEE"
@@ -35,12 +35,12 @@ bool MorphManager::Init() {
 		logger::error("InterfaceMap is Null!");
 		return false;
 	}
-	SKEE::IPluginInterface* ipifp = interfaceExchangeMessage.interfaceMap->QueryInterface("BodyMorph");
+	RE::IPluginInterface* ipifp = interfaceExchangeMessage.interfaceMap->QueryInterface("BodyMorph");
 	if (!ipifp) {
 		logger::error("IPluginInterface is Null!");
 		return false;
 	}
-	SKEE::IBodyMorphInterface*  bodyMorphInterfaceP = static_cast<SKEE::IBodyMorphInterface*>(ipifp);
+	RE::IBodyMorphInterface* bodyMorphInterfaceP = static_cast<RE::IBodyMorphInterface*>(ipifp);
 	if (!bodyMorphInterfaceP) {
 		logger::error("Cast IBodyMorphInterface fail!");
 		return false;
@@ -50,7 +50,7 @@ bool MorphManager::Init() {
 	return true;
 }
 bool MorphManager::ClearPlayerMorph(
-	SKEE::TESObjectREFR* actorP,
+	RE::TESObjectREFR* actorP,
 	const std::string& cleanMorphName1,
 	const std::string& cleanMorphName2
 ) {
@@ -64,7 +64,7 @@ bool MorphManager::ClearPlayerMorph(
 	return true;
 }
 bool MorphManager::ModifyPlayerMorph(
-	SKEE::TESObjectREFR* actorP,
+	RE::TESObjectREFR* actorP,
 	const std::string& cleanMorphName,
 	const std::string& changeMorphName
 	)

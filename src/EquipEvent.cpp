@@ -105,13 +105,6 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		return RE::BSEventNotifyControl::kContinue;
 	}
 
-	// 转换角色指针类型
-	SKEE::TESObjectREFR* skeeRefr = reinterpret_cast<SKEE::TESObjectREFR*>(eventActorP);
-	if (!skeeRefr) {
-		logger::error("RE::TESObjectREFR cast to SKEE::TESObjectREFR error");
-		return RE::BSEventNotifyControl::kContinue;
-	}
-
 	std::string highHeelSlideName = slideData.highHeelSlideName;
 	std::string noHighHeelSlideName = slideData.noHighHeelSlideName;
 	
@@ -131,12 +124,12 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		const bool isFromHighToNoHigh = (a_event->equipped == slideData.reverse);
 		const std::string fromSlide = isFromHighToNoHigh ? highHeelSlideName : noHighHeelSlideName;
 		const std::string toSlide = isFromHighToNoHigh ? noHighHeelSlideName : highHeelSlideName;
-		MorphManager::GetSingleton().ModifyPlayerMorph(skeeRefr, fromSlide, toSlide);
+		MorphManager::GetSingleton().ModifyPlayerMorph(eventActorP, fromSlide, toSlide);
 	} else if (isStockingArmor && !a_event->equipped) {
 		// 穿脱丝袜
 		// 清空滑块
 		logger::info("clear morph");
-		MorphManager::GetSingleton().ClearPlayerMorph(skeeRefr, highHeelSlideName, noHighHeelSlideName);
+		MorphManager::GetSingleton().ClearPlayerMorph(eventActorP, highHeelSlideName, noHighHeelSlideName);
 	}
 	logger::info("isFeetArmor : {} equipStocking: {}", isFeetArmor, equipStocking);
 	return RE::BSEventNotifyControl::kContinue;

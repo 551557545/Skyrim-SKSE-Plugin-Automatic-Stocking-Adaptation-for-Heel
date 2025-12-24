@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SKEE
+namespace RE
 {
 class TESObjectREFR;
 class NiAVObject;
