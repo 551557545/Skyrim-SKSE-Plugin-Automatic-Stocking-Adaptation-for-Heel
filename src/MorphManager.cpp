@@ -60,13 +60,16 @@ bool MorphManager::ClearPlayerMorph(
 	if (!cleanMorphName2.empty()) {
 		MorphManager::GetSingleton().bodyMorphInterface->ClearMorph(actorP, cleanMorphName2.c_str(), (cleanMorphName2 + "Key").c_str());
 	}
-	MorphManager::GetSingleton().bodyMorphInterface->ApplyBodyMorphs(actorP, false);
+	if (actorP->Is3DLoaded()) {
+		MorphManager::GetSingleton().bodyMorphInterface->ApplyBodyMorphs(actorP, true);
+	}
 	return true;
 }
 bool MorphManager::ModifyPlayerMorph(
 	RE::TESObjectREFR* actorP,
 	const std::string& cleanMorphName,
-	const std::string& changeMorphName
+	const std::string& changeMorphName,
+	const float threshold
 	)
 {	
 	try {
@@ -74,9 +77,11 @@ bool MorphManager::ModifyPlayerMorph(
 			MorphManager::GetSingleton().bodyMorphInterface->SetMorph(actorP, cleanMorphName.c_str(), (cleanMorphName + "Key").c_str(), 0.0F);
 		}
 		if (!changeMorphName.empty()) {
-			MorphManager::GetSingleton().bodyMorphInterface->SetMorph(actorP, changeMorphName.c_str(), (changeMorphName + "Key").c_str(), 1.0F);
+			MorphManager::GetSingleton().bodyMorphInterface->SetMorph(actorP, changeMorphName.c_str(), (changeMorphName + "Key").c_str(), threshold);
 		}
-		MorphManager::GetSingleton().bodyMorphInterface->ApplyBodyMorphs(actorP, false);
+		if (actorP->Is3DLoaded()) {
+			MorphManager::GetSingleton().bodyMorphInterface->ApplyBodyMorphs(actorP, true);
+		}
         return true;
     }
     catch (const std::exception& e) {

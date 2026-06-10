@@ -25,6 +25,8 @@ public:
 		std::vector<uint32_t> stockingSlotList;
 		std::vector<RE::BGSBipedObjectForm::BipedObjectSlot> bipedObjectSlotList;
 		bool reverse;
+		bool playerOnly;
+		float noHighHeelSlideThreshold;
 
 		// 注意：const 必须放在函数后（修饰成员函数，保证 const 对象可调用）
 		std::string toString() const
@@ -66,8 +68,8 @@ public:
 
 			// C++20：补充 bipedObjectSlotList 的打印
 			return std::format(
-				"SlideDataConfig{{reverse: \"{}\",highHeelSlideName: \"{}\", noHighHeelSlideName: \"{}\", stockingSlotList: {}, bipedObjectSlotList: {}}}",
-				reverse,highHeelSlideName, noHighHeelSlideName,
+				"SlideDataConfig{{playerOnly: \"{}\",reverse: \"{}\",highHeelSlideName: \"{}\", noHighHeelSlideName: \"{}\", stockingSlotList: {}, bipedObjectSlotList: {}}}",
+				playerOnly,reverse, highHeelSlideName, noHighHeelSlideName,
 				formatUIntVector(stockingSlotList),
 				formatBipedSlotVector(bipedObjectSlotList));
 		}

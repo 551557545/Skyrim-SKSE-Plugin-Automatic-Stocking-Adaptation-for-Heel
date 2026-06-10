@@ -22,6 +22,7 @@ public:
 	bool ModifyPlayerMorph(
 		RE::TESObjectREFR* actorP,
 		const std::string& cleanMorphName,
-		const std::string& changeMorphName
+		const std::string& changeMorphName,
+		const float threshold
 	);
 };

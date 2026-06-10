@@ -12,7 +12,7 @@ EquipEvent& EquipEvent::GetSingleton()
 
 bool HasEquipingStocking(
 	const std::vector<RE::BGSBipedObjectForm::BipedObjectSlot>& slotArray,
-	const RE::PlayerCharacter& playerP)
+	const RE::Actor& actorPtr)
 {
 	// 容器为空，直接返回false（提前退出，优化逻辑）
 	if (slotArray.empty()) {
@@ -20,7 +20,7 @@ bool HasEquipingStocking(
 	}
 
 	// 临时移除const限定（GetWornArmor实际不修改对象，安全）
-	RE::PlayerCharacter& mutablePlayer = const_cast<RE::PlayerCharacter&>(playerP);
+	RE::Actor& mutablePlayer = const_cast<RE::Actor&>(actorPtr);
 
 	// 遍历所有目标Slot，检查玩家是否穿戴了对应Slot的护甲
 	for (const auto& targetSlot : slotArray) {
@@ -59,6 +59,23 @@ bool HasBipedSlot(const std::vector<RE::BGSBipedObjectForm::BipedObjectSlot>& sl
 }
 
 
+bool IsCurrentFollower(RE::Actor* actor)
+{
+	if (!actor)
+		return false;
+
+	static RE::TESFaction* followerFaction = []() {
+		return RE::TESForm::LookupByEditorID<RE::TESFaction>(
+			"CurrentFollowerFaction");
+	}();
+
+	if (!followerFaction)
+		return false;
+
+	return actor->IsInFaction(followerFaction);
+}
+
+
 RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_event, RE::BSTEventSource<RE::TESEquipEvent>* a_eventSource)
 {
 	if (!a_event) {
@@ -67,13 +84,25 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		return RE::BSEventNotifyControl::kContinue;
 	}
 
-	RE::TESObjectREFR* eventActorP = a_event->actor.get();
-	RE::PlayerCharacter* playerP = RE::PlayerCharacter::GetSingleton();
-
-	if (eventActorP != playerP) {
-		logger::warn("Non player event");
+	// 获取json配置
+	const JsonConfigReader::SlideDataConfig& slideData = GLOBAL_CONTEXT.GetSlideData();
+	if (slideData.empty()) {
+		logger::error("slideData is empty");
 		return RE::BSEventNotifyControl::kContinue;
-	}	
+	}
+
+	RE::TESObjectREFR* eventActorP = a_event->actor.get();
+	
+
+	RE::Actor* actorPtr = eventActorP->As<RE::Actor>();
+	if (!actorPtr || !actorPtr->Is3DLoaded()) {
+		logger::warn("Non 3D loaded");
+		return RE::BSEventNotifyControl::kContinue;
+	}
+	if (slideData.playerOnly && !actorPtr->IsPlayerRef()) {
+		logger::warn("Non Player");
+		return RE::BSEventNotifyControl::kContinue;
+	}
 
 	RE::FormID formID = a_event->baseObject;
 	RE::TESForm* form = RE::TESForm::LookupByID(formID);
@@ -97,19 +126,8 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		SKSE::log::trace("Exiting EquipEvent::ProcessEvent (cast failed)");
 		return RE::BSEventNotifyControl::kContinue;
 	}
-
-		// 获取json配置
-	const JsonConfigReader::SlideDataConfig& slideData = GLOBAL_CONTEXT.GetSlideData();
-	if (slideData.empty()) {
-		logger::error("slideData is empty");
-		return RE::BSEventNotifyControl::kContinue;
-	}
-
-	std::string highHeelSlideName = slideData.highHeelSlideName;
-	std::string noHighHeelSlideName = slideData.noHighHeelSlideName;
 	
-	logger::info("equip : {}", a_event->equipped);
-	
+
 	
 	bool isFeetArmor = armor->HasPartOf(RE::BGSBipedObjectForm::BipedObjectSlot::kFeet);
 	bool isStockingArmor = !isFeetArmor ? HasBipedSlot(slideData.bipedObjectSlotList, armor->GetSlotMask()) : false;
@@ -117,21 +135,34 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		logger::info("Not a feet armor and Not a stocking armor");
 		return RE::BSEventNotifyControl::kContinue;
 	}
-	bool equipStocking = false;
-	if (isFeetArmor && (equipStocking = HasEquipingStocking(slideData.bipedObjectSlotList, *playerP))) {
-		// 穿脱鞋子 同时装备了丝袜
-		logger::info("change morph");
-		const bool isFromHighToNoHigh = (a_event->equipped == slideData.reverse);
-		const std::string fromSlide = isFromHighToNoHigh ? highHeelSlideName : noHighHeelSlideName;
-		const std::string toSlide = isFromHighToNoHigh ? noHighHeelSlideName : highHeelSlideName;
-		MorphManager::GetSingleton().ModifyPlayerMorph(eventActorP, fromSlide, toSlide);
-	} else if (isStockingArmor && !a_event->equipped) {
-		// 穿脱丝袜
-		// 清空滑块
-		logger::info("clear morph");
-		MorphManager::GetSingleton().ClearPlayerMorph(eventActorP, highHeelSlideName, noHighHeelSlideName);
-	}
-	logger::info("isFeetArmor : {} equipStocking: {}", isFeetArmor, equipStocking);
+
+	SKSE::GetTaskInterface()->AddTask([handle = actorPtr->CreateRefHandle(), equipped = a_event->equipped, isFeetArmor, isStockingArmor, slideData]() {
+		RE::NiPointer<RE::Actor> actor = handle.get();
+		if (!actor || !actor->Is3DLoaded())
+			return;
+		std::string highHeelSlideName = slideData.highHeelSlideName;
+		std::string noHighHeelSlideName = slideData.noHighHeelSlideName;
+		float noHighHeelSlideThreshold = slideData.noHighHeelSlideThreshold;
+
+		logger::info("equip : {}", equipped);
+
+		bool equipStocking = false;
+
+		if (isFeetArmor && (equipStocking = HasEquipingStocking(slideData.bipedObjectSlotList, *actor))) {
+			// 穿脱鞋子 同时装备了丝袜
+			logger::info("change morph");
+			const bool isFromHighToNoHigh = (equipped == slideData.reverse);
+			const std::string cleanMorphName = isFromHighToNoHigh ? highHeelSlideName : noHighHeelSlideName;
+			const std::string changeMorphName = isFromHighToNoHigh ? noHighHeelSlideName : highHeelSlideName;
+			const float threshold = changeMorphName == noHighHeelSlideName ? noHighHeelSlideThreshold : 1.0F;
+			MorphManager::GetSingleton().ModifyPlayerMorph(actor->As<RE::TESObjectREFR>(), cleanMorphName, changeMorphName, threshold);
+		} else if (isStockingArmor && !equipped) {
+			// 穿脱丝袜
+			// 清空滑块
+			logger::info("clear morph");
+			MorphManager::GetSingleton().ClearPlayerMorph(actor->As<RE::TESObjectREFR>(), highHeelSlideName, noHighHeelSlideName);
+		}
+		logger::info("isFeetArmor : {} equipStocking: {}", isFeetArmor, equipStocking);
+	});
 	return RE::BSEventNotifyControl::kContinue;
 }
-

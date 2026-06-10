@@ -41,11 +41,21 @@ std::optional<JsonConfigReader::SlideDataConfig> JsonConfigReader::SlideDataConf
 		SKSELog::error("SlideDataConfig parsing failed: reverse not is boolean");
 		return std::nullopt;
 	}
+	if (jsonObj.contains("playerOnly") && !jsonObj["playerOnly"].is_boolean()) {
+		SKSELog::error("SlideDataConfig parsing failed: playerOnly not is boolean");
+		return std::nullopt;
+	}
+	if (jsonObj.contains("noHighHeelSlideThreshold") && !jsonObj["noHighHeelSlideThreshold"].is_number_float()) {
+		SKSELog::error("SlideDataConfig parsing failed: noHighHeelSlideThreshold not is float number");
+		return std::nullopt;
+	}
 
 	// 安全读取字符串字段
 	result.highHeelSlideName = jsonObj["highHeelSlideName"].get<std::string>();
 	result.noHighHeelSlideName = jsonObj["noHighHeelSlideName"].get<std::string>();
 	result.reverse = jsonObj["reverse"].get<boolean>();
+	result.playerOnly = jsonObj["playerOnly"].get<boolean>();
+	result.noHighHeelSlideThreshold = jsonObj["noHighHeelSlideThreshold"].get<float>();
 
 	// 安全读取 stockingSlotList（字段缺失/类型错误时赋空向量，避免抛异常）
 	if (jsonObj.contains("stockingSlotList") && jsonObj["stockingSlotList"].is_array()) {

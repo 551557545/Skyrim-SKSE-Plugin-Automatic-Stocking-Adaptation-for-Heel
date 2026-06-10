@@ -1,21 +1,15 @@
 # Skyrim-SKSE-Plugin-Automatic-Stocking-Adaptation-for-Heel
 Automatic Stocking Adaptation for Heel On/Off Movements
 
-中文文档： [README.md](https://github.com/551557545/Skyrim-SKSE-Plugin-Automatic-Stocking-Adaptation-for-Heel/blob/main/README_cn.md)
-
-
-
-# Quick Start
-
-Download the [plugin bootstrap](https://github.com/gottyduke/PluginTutorialCN/blob/master/docs/setup/Setup.md) and build the Bootstrap then copy this source code to `path: SKSEPlugins/Plugins`
+This plugin is **not necessarily incompatible with all mods**. Due to the inconsistency of high-heel foot models across different mods, it can only be compatible with the stocking model sliders under the same mod group. Unless you create a unified foot model yourself and adapt all stocking sliders to this foot model at the same time.
 
 
 
 # SKSE Plugin Usage Guide
 
-The code must add in plugin path `SKSE/Automatic Hosiery Adaptation for High Heel Config` and filename with `config.json`.
+1.Install the mod with mo2
 
-Example path: `F:\The Elder Scrolls V Skyrim - Special Edition\mo2\mods\SKSE\SKSE\Automatic Hosiery Adaptation for High Heel Config`
+2.Open the `config.json`  and edit it .path in : `SKSE\Automatic Hosiery Adaptation for High Heel Config`
 
 ```json
 {
@@ -31,7 +25,13 @@ Example path: `F:\The Elder Scrolls V Skyrim - Special Edition\mo2\mods\SKSE\SKS
 | `highHeelSlideName`   | `String`  | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 0 when the high heels are removed; otherwise, set it to 1. |
 | `noHighHeelSlideName` | `String`  | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 1 when the high heels are removed; otherwise, set it to 0.<br />It is the inverted version of `highHeelSlideName`.<br />Can be empty string |
 | `reverse`             | `boolean` | Used to control whether to reverse the slider state. Example: For the slider named `highHeelSlideName`, the slider weight is 0 when the shoes are worn, and 1 when the shoes are taken off. |
-| `stockingSlotList`    | `Array`   | Hosiery equipment slot. It checks whether the corresponding slot is equipped on the player to control whether the slider is activated. See **Additional : supported slot** |
+| `stockingSlotList`    | `Array`   | Stocking equipment slot array; multiple entries can be filled in, separated by English commas. The activation status of the sliders is controlled by detecting whether the player has equipped items in the corresponding slots. <br />Example: Enter 38. The plugin will then check whether the player has equipped the item in slot 38. If so, the previous stocking sliders will be reset when the player unequips the item in slot 38.<br />See **Additional : supported slot** |
+
+
+
+
+
+
 
 **Additional : supported slot**
 
