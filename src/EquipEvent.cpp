@@ -143,6 +143,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		std::string highHeelSlideName = slideData.highHeelSlideName;
 		std::string noHighHeelSlideName = slideData.noHighHeelSlideName;
 		float noHighHeelSlideThreshold = slideData.noHighHeelSlideThreshold;
+		float highHeelSlideThreshold = slideData.highHeelSlideThreshold;
 
 		logger::info("equip : {}", equipped);
 
@@ -154,7 +155,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 			const bool isFromHighToNoHigh = (equipped == slideData.reverse);
 			const std::string cleanMorphName = isFromHighToNoHigh ? highHeelSlideName : noHighHeelSlideName;
 			const std::string changeMorphName = isFromHighToNoHigh ? noHighHeelSlideName : highHeelSlideName;
-			const float threshold = changeMorphName == noHighHeelSlideName ? noHighHeelSlideThreshold : 1.0F;
+			const float threshold = changeMorphName == noHighHeelSlideName ? noHighHeelSlideThreshold : highHeelSlideThreshold;
 			MorphManager::GetSingleton().ModifyPlayerMorph(actor->As<RE::TESObjectREFR>(), cleanMorphName, changeMorphName, threshold);
 		} else if (isStockingArmor && !equipped) {
 			// ´©ÍÑË¿Íà

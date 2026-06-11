@@ -13,19 +13,25 @@ This plugin is **not necessarily incompatible with all mods**. Due to the incons
 
 ```json
 {
-    "highHeelSlideName": "Fana188HighHeel",
+    "highHeelSlideName": "your high slide name",
+    "highHeelSlideThreshold": 1,
     "noHighHeelSlideName": "",
+    "noHighHeelSlideThreshold": 1,
     "reverse": false,
-    "stockingSlotList": [38]
+    "playerOnly": true,
+    "stockingSlotList": [38,53]
 }
 ```
 
-| FieldName             | FieldType | Description                                                  |
-| --------------------- | --------- | ------------------------------------------------------------ |
-| `highHeelSlideName`   | `String`  | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 0 when the high heels are removed; otherwise, set it to 1. |
-| `noHighHeelSlideName` | `String`  | Stocking slider. This program is used to control the weight value of the slider. The weight value can only be 0 or 1.Set the slider’s weight value to 1 when the high heels are removed; otherwise, set it to 0.<br />It is the inverted version of `highHeelSlideName`.<br />Can be empty string |
-| `reverse`             | `boolean` | Used to control whether to reverse the slider state. Example: For the slider named `highHeelSlideName`, the slider weight is 0 when the shoes are worn, and 1 when the shoes are taken off. |
-| `stockingSlotList`    | `Array`   | Stocking equipment slot array; multiple entries can be filled in, separated by English commas. The activation status of the sliders is controlled by detecting whether the player has equipped items in the corresponding slots. <br />Example: Enter 38. The plugin will then check whether the player has equipped the item in slot 38. If so, the previous stocking sliders will be reset when the player unequips the item in slot 38.<br />See **Additional : supported slot** |
+| FieldName                  | FieldType | Description                                                  |
+| -------------------------- | --------- | ------------------------------------------------------------ |
+| `highHeelSlideName`        | `String`  | 1.Stocking slider. <br />2.This program is used to control the weight value of the slider.<br />3.The weight value can only be 0 or 1.Set the slider’s weight value to 0 when the high heels are removed; otherwise, set it to 1. |
+| `noHighHeelSlideName`      | `String`  | 1.Stocking slider.<br />2.This program is used to control the weight value of the slider.<br />3.The weight value can only be 0 or 1.Set the slider’s weight value to 1 when the high heels are removed; otherwise, set it to 0.<br />4.It is the inverted version of `highHeelSlideName`.<br />5.Can be empty string |
+| `reverse`                  | `boolean` | 1.Used to control whether to reverse the slider state. 2.Example: For the slider named `highHeelSlideName`, the slider weight is 0 when the shoes are worn, and 1 when the shoes are taken off. |
+| `stockingSlotList`         | `Array`   | 1.Stocking equipment slot array.<br />2.Multiple entries can be filled in, separated by English commas. The activation status of the sliders is controlled by detecting whether the player has equipped items in the corresponding slots. <br />3.Example: Enter 38. The plugin will then check whether the player has equipped the item in slot 38. If so, the previous stocking sliders will be reset when the player unequips the item in slot 38.<br />See **Additional : supported slot** |
+| `playerOnly`               | `boolean` | 1.Control whether it is used only for player<br />2.If set to true, the feature will only take effect for the player. |
+| `highHeelSlideThreshold`   | `float`   | 1.A numeric value of float type.<br/>2.Negative numbers are supported.<br/>3.The recommended setting range is [-1, 1]. The value 1 corresponds to 100% in the `bodySlider` slider, while -1 corresponds to -100%.<br />4.Used to control the value of `highHeelSlideName`. |
+| `noHighHeelSlideThreshold` | `float`   | 1.A numeric value of float type.<br/>2.Negative numbers are supported.<br/>3.The recommended setting range is [-1, 1]. The value 1 corresponds to 100% in the `bodySlider` slider, while -1 corresponds to -100%.<br />4.Used to control the value of `noHighHeelSlideName`. |
 
 
 

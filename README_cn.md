@@ -18,19 +18,25 @@
 
 ```json
 {
-    "highHeelSlideName": "Fana188HighHeel",
+    "highHeelSlideName": "your high slide name",
+    "highHeelSlideThreshold": 1,
     "noHighHeelSlideName": "",
+    "noHighHeelSlideThreshold": 1,
     "reverse": false,
-    "stockingSlotList": [38]
+    "playerOnly": true,
+    "stockingSlotList": [38,53]
 }
 ```
 
-| FieldName             | FieldType | Description                                                  |
-| --------------------- | --------- | ------------------------------------------------------------ |
-| `highHeelSlideName`   | `String`  | 丝袜滑块名称。本程序用于控制该滑块的权重值（权重值仅为 0 或 1）。<br />脱下高跟鞋时将滑块权重设为 0，穿上时设为 1。 |
-| `noHighHeelSlideName` | `String`  | 丝袜滑块名称。本程序用于控制该滑块的权重值（权重值仅为 0 或 1）。脱下高跟鞋时将滑块权重设为 1，穿上时设为 0。是 `highHeelSlideName` 的反向控制版本。 |
-| `reverse`             | `boolean` | 用于控制是否反向切换滑块状态。例子：`highHeelSlideName`穿上鞋子则滑块权重为0，脱下鞋子滑块权重为1 |
-| `stockingSlotList`    | `Array`   | 丝袜装备槽位数组，可以填入多个，用英文逗号分开。通过检测玩家是否装备了对应槽位的物品，来控制滑块是否激活。<br />例如：填入38。则会判断玩家是否穿上38号插槽的装备。如果有，则当玩家脱下38号插槽装备则会清空之前的丝袜滑块<br />比如详情请见：**补充说明：支持的装备槽位** |
+| FieldName                  | FieldType | Description                                                  |
+| -------------------------- | --------- | ------------------------------------------------------------ |
+| `highHeelSlideName`        | `String`  | 丝袜滑块名称。本程序用于控制该滑块的权重值（权重值仅为 0 或 1）。<br />脱下高跟鞋时将滑块权重设为 0，穿上时设为 1。 |
+| `noHighHeelSlideName`      | `String`  | 丝袜滑块名称。本程序用于控制该滑块的权重值（权重值仅为 0 或 1）。脱下高跟鞋时将滑块权重设为 1，穿上时设为 0。是 `highHeelSlideName` 的反向控制版本。 |
+| `reverse`                  | `boolean` | 用于控制是否反向切换滑块状态。例子：`highHeelSlideName`穿上鞋子则滑块权重为0，脱下鞋子滑块权重为1 |
+| `stockingSlotList`         | `Array`   | 丝袜装备槽位数组，可以填入多个，用英文逗号分开。通过检测玩家是否装备了对应槽位的物品，来控制滑块是否激活。<br />例如：填入38。则会判断玩家是否穿上38号插槽的装备。如果有，则当玩家脱下38号插槽装备则会清空之前的丝袜滑块<br />比如详情请见：**补充说明：支持的装备槽位** |
+| `playerOnly`               | `boolean` | 控制该功能是否仅对玩家生效。<br />若设置为`true`，此功能将只作用于玩家。 |
+| `highHeelSlideThreshold`   | `float`   | 浮点型数值。<br/>支持负数。<br/>推荐取值范围：[-1, 1]。数值 1 对应体型滑块 `bodySlider` 的 100%，数值 - 1 对应 - 100%。<br/>用于控制 `highHeelSlideName`参数数值。 |
+| `noHighHeelSlideThreshold` | `float`   | 浮点型数值。<br/>支持负数。<br/>推荐取值范围：[-1, 1]。数值 1 对应体型滑块 `bodySlider` 的 100%，数值 - 1 对应 - 100%。<br/>用于控制 `noHighHeelSlideName`参数数值。 |
 
 **补充说明：支持的装备槽位**
 

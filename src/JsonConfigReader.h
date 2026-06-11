@@ -27,6 +27,7 @@ public:
 		bool reverse;
 		bool playerOnly;
 		float noHighHeelSlideThreshold;
+		float highHeelSlideThreshold;
 
 		// 注意：const 必须放在函数后（修饰成员函数，保证 const 对象可调用）
 		std::string toString() const
@@ -68,8 +69,8 @@ public:
 
 			// C++20：补充 bipedObjectSlotList 的打印
 			return std::format(
-				"SlideDataConfig{{playerOnly: \"{}\",reverse: \"{}\",highHeelSlideName: \"{}\", noHighHeelSlideName: \"{}\", stockingSlotList: {}, bipedObjectSlotList: {}}}",
-				playerOnly,reverse, highHeelSlideName, noHighHeelSlideName,
+				"SlideDataConfig{{playerOnly: \"{}\",reverse: \"{}\",highHeelSlideThreshold: \"{}\",highHeelSlideName: \"{}\",noHighHeelSlideThreshold: \"{}\", noHighHeelSlideName: \"{}\", stockingSlotList: {}, bipedObjectSlotList: {}}}",
+				playerOnly, reverse, highHeelSlideThreshold, highHeelSlideName, noHighHeelSlideThreshold, noHighHeelSlideName,
 				formatUIntVector(stockingSlotList),
 				formatBipedSlotVector(bipedObjectSlotList));
 		}

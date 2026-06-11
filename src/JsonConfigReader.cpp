@@ -45,8 +45,12 @@ std::optional<JsonConfigReader::SlideDataConfig> JsonConfigReader::SlideDataConf
 		SKSELog::error("SlideDataConfig parsing failed: playerOnly not is boolean");
 		return std::nullopt;
 	}
-	if (jsonObj.contains("noHighHeelSlideThreshold") && !jsonObj["noHighHeelSlideThreshold"].is_number_float()) {
-		SKSELog::error("SlideDataConfig parsing failed: noHighHeelSlideThreshold not is float number");
+	if (jsonObj.contains("noHighHeelSlideThreshold") && !jsonObj["noHighHeelSlideThreshold"].is_number()) {
+		SKSELog::error("SlideDataConfig parsing failed: noHighHeelSlideThreshold not is number");
+		return std::nullopt;
+	}
+	if (jsonObj.contains("highHeelSlideThreshold") && !jsonObj["highHeelSlideThreshold"].is_number()) {
+		SKSELog::error("SlideDataConfig parsing failed: highHeelSlideThreshold not is number");
 		return std::nullopt;
 	}
 
@@ -56,6 +60,7 @@ std::optional<JsonConfigReader::SlideDataConfig> JsonConfigReader::SlideDataConf
 	result.reverse = jsonObj["reverse"].get<boolean>();
 	result.playerOnly = jsonObj["playerOnly"].get<boolean>();
 	result.noHighHeelSlideThreshold = jsonObj["noHighHeelSlideThreshold"].get<float>();
+	result.highHeelSlideThreshold = jsonObj["highHeelSlideThreshold"].get<float>();
 
 	// 安全读取 stockingSlotList（字段缺失/类型错误时赋空向量，避免抛异常）
 	if (jsonObj.contains("stockingSlotList") && jsonObj["stockingSlotList"].is_array()) {
