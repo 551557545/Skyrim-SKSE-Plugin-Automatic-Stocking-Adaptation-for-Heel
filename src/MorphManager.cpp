@@ -20,7 +20,6 @@ bool MorphManager::Init() {
 		return false;
 	}
 	RE::InterfaceExchangeMessage interfaceExchangeMessage{};
-	// 3. 向 SKEE 发送接口交换请求
 	bool dispatchSuccess = messagingInterface->Dispatch(
 		static_cast<uint32_t>(RE::InterfaceExchangeMessage::kMessage_ExchangeInterface),
 		&interfaceExchangeMessage,
