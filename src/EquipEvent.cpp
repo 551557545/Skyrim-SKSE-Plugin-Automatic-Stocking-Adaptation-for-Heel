@@ -14,19 +14,19 @@ bool HasEquipingStocking(
 	const std::vector<RE::BGSBipedObjectForm::BipedObjectSlot>& slotArray,
 	const RE::Actor& actorPtr)
 {
-	// ÈİÆ÷Îª¿Õ£¬Ö±½Ó·µ»Øfalse£¨ÌáÇ°ÍË³ö£¬ÓÅ»¯Âß¼­£©
+	// å®¹å™¨ä¸ºç©ºï¼Œç›´æ¥è¿”å›falseï¼ˆæå‰é€€å‡ºï¼Œä¼˜åŒ–é€»è¾‘ï¼‰
 	if (slotArray.empty()) {
 		return false;
 	}
 
-	// ÁÙÊ±ÒÆ³ıconstÏŞ¶¨£¨GetWornArmorÊµ¼Ê²»ĞŞ¸Ä¶ÔÏó£¬°²È«£©
+	// ä¸´æ—¶ç§»é™¤consté™å®šï¼ˆGetWornArmorå®é™…ä¸ä¿®æ”¹å¯¹è±¡ï¼Œå®‰å…¨ï¼‰
 	RE::Actor& mutablePlayer = const_cast<RE::Actor&>(actorPtr);
 
-	// ±éÀúËùÓĞÄ¿±êSlot£¬¼ì²éÍæ¼ÒÊÇ·ñ´©´÷ÁË¶ÔÓ¦SlotµÄ»¤¼×
+	// éå†æ‰€æœ‰ç›®æ ‡Slotï¼Œæ£€æŸ¥ç©å®¶æ˜¯å¦ç©¿æˆ´äº†å¯¹åº”Slotçš„æŠ¤ç”²
 	for (const auto& targetSlot : slotArray) {
-		// µ÷ÓÃ·Çconst°æ±¾µÄGetWornArmor£¨´ËÊ±¶ÔÏóÎŞconstÏŞ¶¨£¬Æ¥Åä³É¹¦£©
+		// è°ƒç”¨éconstç‰ˆæœ¬çš„GetWornArmorï¼ˆæ­¤æ—¶å¯¹è±¡æ— consté™å®šï¼ŒåŒ¹é…æˆåŠŸï¼‰
 		RE::TESObjectARMO* wornArmor = mutablePlayer.GetWornArmor(targetSlot, false);
-		// Èç¹û¸ÃSlotÓĞ´©´÷µÄ»¤¼×£¬·µ»Øtrue
+		// å¦‚æœè¯¥Slotæœ‰ç©¿æˆ´çš„æŠ¤ç”²ï¼Œè¿”å›true
 		if (wornArmor != nullptr) {
 			return true;
 		}
@@ -35,26 +35,23 @@ bool HasEquipingStocking(
 }
 
 bool HasBipedSlot(const std::vector<RE::BGSBipedObjectForm::BipedObjectSlot>& slotArray,
-	const RE::BGSBipedObjectForm::BipedObjectSlot& targetSlot)
+	std::uint32_t targetMask)
 {
-	// ÈİÆ÷Îª¿ÕÖ±½Ó·µ»Øfalse
+	// å®¹å™¨ä¸ºç©ºç›´æ¥è¿”å›false
 	if (slotArray.empty()) {
 		return false;
 	}
-	// 1. ÏÔÊ½×ª»»targetSlotÎªµ×²ãÊıÖµÀàĞÍ
-	const std::uint32_t targetMask = static_cast<std::uint32_t>(targetSlot);
-
-	// 2. ±éÀúÈİÆ÷£ºÑ­»·±äÁ¿ÏÔÊ½Ö¸¶¨ÀàĞÍ
+	// éå†å®¹å™¨ï¼šå¾ªç¯å˜é‡æ˜¾å¼æŒ‡å®šç±»å‹
 	for (const RE::BGSBipedObjectForm::BipedObjectSlot& slot : slotArray) {
-		// ÏÔÊ½×ª»»µ±Ç°²å²ÛÎªÊıÖµÀàĞÍ
+		// æ˜¾å¼è½¬æ¢å½“å‰æ’æ§½ä¸ºæ•°å€¼ç±»å‹
 		const std::uint32_t slotValue = static_cast<std::uint32_t>(slot);
-		// °´Î»ÓëÅĞ¶Ï°üº¬¹ØÏµ
+		// æŒ‰ä½ä¸åˆ¤æ–­åŒ…å«å…³ç³»
 		if ((targetMask & slotValue) != 0) {
 			return true;
 		}
 	}
 
-	// ÎŞÆ¥Åä²å²Û
+	// æ— åŒ¹é…æ’æ§½
 	return false;
 }
 
@@ -84,7 +81,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		return RE::BSEventNotifyControl::kContinue;
 	}
 
-	// »ñÈ¡jsonÅäÖÃ
+	// è·å–jsoné…ç½®
 	const JsonConfigReader::SlideDataConfig& slideData = GLOBAL_CONTEXT.GetSlideData();
 	if (slideData.empty()) {
 		logger::error("slideData is empty");
@@ -106,7 +103,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 
 	RE::FormID formID = a_event->baseObject;
 	RE::TESForm* form = RE::TESForm::LookupByID(formID);
-	// ÅĞ¶ÏÊÇ·ñÊÇ×°±¸
+	// åˆ¤æ–­æ˜¯å¦æ˜¯è£…å¤‡
 	if (!form) {
 		logger::warn("EquipEvent::ProcessEvent - Form not found for ID: {:X}", formID);
 		logger::trace("Exiting EquipEvent::ProcessEvent (no form)");
@@ -119,7 +116,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 	}
 
 
-	// »»»»Îªarmor¶ÔÏó
+	// æ¢æ¢ä¸ºarmorå¯¹è±¡
 	RE::TESObjectARMO* armor = form->As<RE::TESObjectARMO>();
 	if (!armor) {
 		SKSE::log::warn("EquipEvent::ProcessEvent - Failed to cast form to armor");
@@ -130,7 +127,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 
 	
 	bool isFeetArmor = armor->HasPartOf(RE::BGSBipedObjectForm::BipedObjectSlot::kFeet);
-	bool isStockingArmor = !isFeetArmor ? HasBipedSlot(slideData.bipedObjectSlotList, armor->GetSlotMask()) : false;
+	bool isStockingArmor = !isFeetArmor ? HasBipedSlot(slideData.bipedObjectSlotList, static_cast<std::uint32_t>(armor->GetSlotMask().get())) : false;
 	if (!isFeetArmor && !isStockingArmor) {
 		logger::info("Not a feet armor and Not a stocking armor");
 		return RE::BSEventNotifyControl::kContinue;
@@ -150,7 +147,7 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 		bool equipStocking = false;
 
 		if (isFeetArmor && (equipStocking = HasEquipingStocking(slideData.bipedObjectSlotList, *actor))) {
-			// ´©ÍÑĞ¬×Ó Í¬Ê±×°±¸ÁËË¿Íà
+			// ç©¿è„±é‹å­ åŒæ—¶è£…å¤‡äº†ä¸è¢œ
 			logger::info("change morph");
 			const bool isFromHighToNoHigh = (equipped == slideData.reverse);
 			const std::string cleanMorphName = isFromHighToNoHigh ? highHeelSlideName : noHighHeelSlideName;
@@ -158,8 +155,8 @@ RE::BSEventNotifyControl EquipEvent::ProcessEvent(const RE::TESEquipEvent* a_eve
 			const float threshold = changeMorphName == noHighHeelSlideName ? noHighHeelSlideThreshold : highHeelSlideThreshold;
 			MorphManager::GetSingleton().ModifyPlayerMorph(actor->As<RE::TESObjectREFR>(), cleanMorphName, changeMorphName, threshold);
 		} else if (isStockingArmor && !equipped) {
-			// ´©ÍÑË¿Íà
-			// Çå¿Õ»¬¿é
+			// ç©¿è„±ä¸è¢œ
+			// æ¸…ç©ºæ»‘å—
 			logger::info("clear morph");
 			MorphManager::GetSingleton().ClearPlayerMorph(actor->As<RE::TESObjectREFR>(), highHeelSlideName, noHighHeelSlideName);
 		}

@@ -5,6 +5,7 @@
 #include <EquipEvent.h>
 #include <RaceMenuInterface/IPluginInterface.h>
 #include <MorphManager.h>
+#include <PluginLogger.h>
 
 
 
@@ -65,7 +66,7 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 	//Sleep(5000);
 	SKSE::Init(a_skse);
 	
-	DKUtil::Logger::Init(Plugin::NAME, REL::Module::get().version().string());
+	PluginLogger::Setup();
 	const SKSE::PluginDeclaration* plugin = SKSE::PluginDeclaration::GetSingleton();
 	const auto pluginName = plugin->GetName();
 	const auto pluginVersion = plugin->GetVersion().string(".");
